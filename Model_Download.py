@@ -2,7 +2,7 @@
 Model Download Script
 
 Description:
-    This script downloads the biophysical models (perisomatic and all_active) and the glif models, in /data/First_try_download.
+    This script downloads the biophysical models (perisomatic and all_active) and the glif models, in /data/Physiology.
     For each neuron, I am creating a folder with the specimen_id as name and I am saving the data there, which are two folders (modfiles and work),
     two json files (manifest and fit_parameters), an nwb file, and two swc file (marker and "normal" morphology data)
 
@@ -55,7 +55,7 @@ all_active_id_list = msg_all_act_df.id
 
 
 download_folder_dir = Path(
-    "/opt3/Eleonora/data/First_try_download/"
+    "/opt3/Eleonora/data/Physiology/"
 )  # This is the directory of the main folder where I want to save the data
 perisomatic_dir = download_folder_dir / "perisomatic"
 all_active_dir = download_folder_dir / "all_active"
