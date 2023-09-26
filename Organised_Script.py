@@ -981,18 +981,18 @@ if download_recos == True:
             )
 
 # I am merging the data from this two dataframes (cell_feat_df and cell_df) in order to have all the info in one dataframe (cell_feat_df)
-cell_df = pd.read_csv("/opt3/Eleonora/data/cell_types_specimen_details_3.csv")
+# cell_df = pd.read_csv("/opt3/Eleonora/data/cell_types_specimen_details_3.csv")
 
 morph = reconstruct(cell_id)
 morph_df = pd.DataFrame(morph.compartment_list)
 
-common_id = set(cell_df.specimen__id) & set(feat_df.specimen_id)
+# common_id = set(cell_df.specimen__id) & set(feat_df.specimen_id)
 
-for cell_id in common_id:
-    id_row = cell_df.loc[cell_df["specimen__id"] == cell_id, needed_columns]
-    specimen__id = id_row["specimen__id"].values
-    row_index = cell_feat_df[cell_feat_df["specimen_id"].values == specimen__id].index
-    cell_feat_df.loc[row_index, needed_columns] = id_row.values
+# for cell_id in common_id:
+#     id_row = cell_df.loc[cell_df["specimen__id"] == cell_id, needed_columns]
+#     specimen__id = id_row["specimen__id"].values
+#     row_index = cell_feat_df[cell_feat_df["specimen_id"].values == specimen__id].index
+#     cell_feat_df.loc[row_index, needed_columns] = id_row.values
 
 cells_in_layer = which_layer(layer, cell_feat_df)
 
@@ -1008,7 +1008,7 @@ mice_spiny_cells_idx = set(mice_cells) & set(spiny_cells)
 
 # This dataframe contains only the data on agles, shrinkage, etc. but only for mice cells
 orientation_df = pd.read_csv("/opt3/Eleonora/data/orientation_data.csv")
-orient_id = set(orientation_df.specimen_id) & set(cell_feat_df.specimen_id)
+# orient_id = set(orientation_df.specimen_id) & set(cell_feat_df.specimen_id)
 
 
 # cell_feat_orient_df = deepcopy(cell_feat_df)
