@@ -47,7 +47,7 @@ from math import sqrt
 
 # GLOBAL PARAMETERS
 
-output_dir = Path("/opt3/Eleonora/data/reconstruction")
+output_dir = Path("/opt3/Eleonora/data/Morphology")
 ctc = CellTypesCache(manifest_file=output_dir / "manifest.json")
 axon_color = "blue"
 bas_dendrite_color = "red"
