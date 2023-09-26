@@ -1007,7 +1007,7 @@ class Viz(Analysis):
             )
             x_coord = [val - x_pia for val in x_coord]
             y_coord = [val - y_pia for val in y_coord]
-            # x_coord = -x_coord
+            # x_coord = -x_coord # SV COMMENT: ARE THE COMMENTED LINES STILL NECESSARY?
             # y_coord = -y_coord
             ax.scatter(x_coord, y_coord, color=color)
             # x_node, y_node, z_node = proper_rotation(
@@ -1302,7 +1302,7 @@ class Viz(Analysis):
                 element="poly",
             )
 
-        # pdb.set_trace()
+        # pdb.set_trace() # SV COMMENT: REMOVE
 
         red = mpatches.Patch(color="r", label="Layer 1")
         orange = mpatches.Patch(color="#ff7f0e", label="Layer 2")

@@ -57,14 +57,14 @@ api_dendrite_color = "orange"
 # FUNCTIONS
 
 
-def do_it_all():
-    '''
+def do_it_all():  # SV COMMENT: This is not very informative name of a function
+    """
     This function returns 3 different DataFrames (taken from the Allen, like
     using ctc and methods):
     - ef_df: dataframe containing all the electrophysiological features of the cells
     - mor_df: dataframe containing all the morphological features of the cells
     - feat_df: dataframe containing all the features of the cells
-    '''
+    """
     # feat_df = ctc.get_all_features(dataframe=True)
     feat_df = pd.read_csv("/opt3/Eleonora/data/All_features_cells.csv")
     ef_df = pd.read_csv("/opt3/Eleonora/data/ef_data.csv")
@@ -73,10 +73,10 @@ def do_it_all():
 
 
 def reconstruct(id_cell):
-    '''
-    Returns the morphology (the swc file) of the cell with its specimen_id, in which 
-    there are id, type, the coordinates of each node of the cell, r and parent_id 
-    '''
+    """
+    Returns the morphology (the swc file) of the cell with its specimen_id, in which
+    there are id, type, the coordinates of each node of the cell, r and parent_id
+    """
     morphology = ctc.get_reconstruction(id_cell)
     return morphology
 
@@ -98,7 +98,7 @@ def which_layer(layer, cell_feat_df):
     -------
     pandas.core.indexes.numeric.Int64Index
         An array of indices corresponding to the cells in the specified layer.
-    
+
     Notes
     -----
     This function filters the cells based on the specified layer and returns their indices.
@@ -114,7 +114,6 @@ def which_layer(layer, cell_feat_df):
 
 
     """
-
 
     cells_in_layer = cell_feat_df[
         cell_feat_df["structure__layer"].values == layer
@@ -216,7 +215,7 @@ def species(cell_feat_df):
             686, 687, 688, 689, 692, 693, 694, 695, 696, 698],
            dtype='int64', length=537)
 
-    
+
     """
 
     human_cells = cell_feat_df[
@@ -239,11 +238,11 @@ def _layer_type_species(layer, spex, neur_type, cell_feat_df):
 
     Parameters:
     -----------
-    layer : str 
-        The layer of interest for cell selection ('1', '2', '2/3', '3', '4', '5', '6', '6a', '6b', 
+    layer : str
+        The layer of interest for cell selection ('1', '2', '2/3', '3', '4', '5', '6', '6a', '6b',
         ('2/3','6a', '6b' are only for mice)).
 
-    spex : str 
+    spex : str
         The species of interest ('Homo Sapiens', 'Mus musculus').
 
     neur_type : str
@@ -294,7 +293,7 @@ def _layer_type_species(layer, spex, neur_type, cell_feat_df):
     639         639    0.041217   92.394000      -57.452505     1.604610e-01  ...  Black or African American                              9.0    Homo Sapiens  561414332.0   H16.06.013
     690         690         NaN    9.680000       -7.650000     5.086957e-02  ...         White or Caucasian                              3.0    Homo Sapiens  529678110.0   H16.06.010
 
-    
+
     """
 
     cells_in_layer = which_layer(layer, cell_feat_df)
@@ -320,7 +319,7 @@ def axon_or_dendrite(morph_df):
     Parameters:
     -----------
     morph_df : pandas.DataFrame
-        A DataFrame containing morphological data with a "type" column 
+        A DataFrame containing morphological data with a "type" column
         ( created with:
         morph = reconstruct(cell_id)
         morph_df = pd.DataFrame(morph.compartment_list)   )
@@ -503,7 +502,6 @@ def proper_rotation(slice_angle, upright_angle, x1, y1, z1, shrink_factor):
     y3 = y2 * (math.cos(slice_angle)) - z2 * (math.sin(slice_angle))
     z3 = y2 * (math.sin(slice_angle)) + z2 * (math.cos(slice_angle))
     return x3, y3, z3
-
 
 
 def _find_max_eucl_distance(cell_id, cell_feat_orient_new_df):
@@ -783,7 +781,7 @@ def _species_area(spex, area, cell_feat_orient_df):
     return species_area_idx_df
 
 
-def apply_filters( spex, area, layer, neur_type, cell_feat_orient_df):
+def apply_filters(spex, area, layer, neur_type, cell_feat_orient_df):
     """
     Filter and return a DataFrame containing cells based on species, brain area, layers, and spiny/aspiny features.
 
@@ -802,7 +800,7 @@ def apply_filters( spex, area, layer, neur_type, cell_feat_orient_df):
         - For mice: 'VISp', 'VISpor', 'VISpm', 'VISal', 'VISl', 'VISrl', 'VISam', 'VISli', 'VISpl'.
 
     layer : str
-        The layer condition. Options are '1', '2', '2/3', '3', '4', '5', '6', '6a', '6b' 
+        The layer condition. Options are '1', '2', '2/3', '3', '4', '5', '6', '6a', '6b'
         ('2/3','6a', '6b' are only for mice) .
 
     neur_type : str
@@ -864,7 +862,9 @@ def apply_filters( spex, area, layer, neur_type, cell_feat_orient_df):
     species_area_layer_neur_type_cells = (
         set(species_cells) & set(area_cells) & set(layer_cells) & set(neur_type_cells)
     )
-    species_area_layer_neur_type_idx = np.array(list(species_area_layer_neur_type_cells))
+    species_area_layer_neur_type_idx = np.array(
+        list(species_area_layer_neur_type_cells)
+    )
     species_area_layer_neur_type_idx.sort()
     species_area_layer_neur_type_df = cell_feat_orient_df.loc[
         species_area_layer_neur_type_idx
@@ -873,7 +873,7 @@ def apply_filters( spex, area, layer, neur_type, cell_feat_orient_df):
 
 
 ##########################################################################################################
-# VARIABLE PARAMETERS
+# VARIABLE PARAMETERS # SV COMMENT: To do what? An overall comment/view would be helpful.
 
 download_recos = False
 
@@ -885,14 +885,15 @@ spex = "Mus musculus"  # 'Homo Sapiens'
 
 neur_type = "spiny"  # 'aspiny'
 
-slice_angle = 0
+slice_angle = 0  # SV COMMENT: Where is this value coming from?
 
-upright_angle = 176.909187120959
+upright_angle = 176.909187120959  # SV COMMENT: Where is this value coming from?
 
-shrink_factor = 3.05757172357999
+shrink_factor = 3.05757172357999  # SV COMMENT: Where is this value coming from?
 
 ##########################################################################################################
-# COMPUTATION W VARIABLE PARAMETERS
+# COMPUTATION W VARIABLE PARAMETERS # SV COMMENT: There are a lot of commented statements. If they are outdated, better remove them.
+# If not, comment on top of the lines, what to achieve by uncommenting the following lines.
 
 ef_df, mor_df, feat_df = do_it_all()
 
@@ -966,7 +967,7 @@ not_needed_columns = [
 ]
 
 
-if download_recos == True:
+if download_recos == True:  # SV COMMENT: What is the "reco"? Structural reconstruction?
     for this_row in feat_df.index:
         try:
             file_name = f'specimen_id_{feat_df.loc[this_row,"specimen_id"]}'
@@ -1007,7 +1008,9 @@ axons_idx, basal_dendrite_idx, apical_dendrite_idx = axon_or_dendrite(morph_df)
 mice_spiny_cells_idx = set(mice_cells) & set(spiny_cells)
 
 # This dataframe contains only the data on agles, shrinkage, etc. but only for mice cells
-orientation_df = pd.read_csv("/opt3/Eleonora/data/orientation_data.csv")
+orientation_df = pd.read_csv(
+    "/opt3/Eleonora/data/orientation_data.csv"
+)  # SV COMMENT: Only used in the commented out code below.
 # orient_id = set(orientation_df.specimen_id) & set(cell_feat_df.specimen_id)
 
 
@@ -1026,14 +1029,14 @@ orientation_df = pd.read_csv("/opt3/Eleonora/data/orientation_data.csv")
 #     row_index = cell_feat_orient_df[cell_feat_df["specimen_id"].values == cell_id].index
 #     cell_feat_orient_df.loc[row_index, list(orientation_df.columns)] = id_row.values
 
-# This dataframe is the definitive one, cointaining all the data for all the cells, including angles, shrinkage, etc.; 
+# This dataframe is the definitive one, cointaining all the data for all the cells, including angles, shrinkage, etc.;
 # it has nan values for the cells that are not mice on angle columns.
 cell_feat_orient_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_orientation_data.csv")
 
 
 # cell_feat_orient_new_df = cell_feat_orient_df.dropna(
 #     subset=["soma_distance_from_pia"]
-# )  
+# )
 # It's the dataframe that contains only data of cells whose angles, shrinkage, etc.,  is not nan
 cell_feat_orient_new_df = pd.read_csv("/opt3/Eleonora/data/oriented_data.csv")
 
@@ -1051,14 +1054,16 @@ VISp_mice_cells_idx = set(mice_orient_cells) & set(VISp_cells_idx)
 
 
 # Here I analyzed the morphology of the cells, making a list of their specimens. I have divided them in 4 grpups,
-# just for convenience. 
-# The ids with "# PROBLEMATIC!!!" are the ones that I had to remove from the list because their morphology was wrong also 
+# just for convenience.
+# The ids with "# PROBLEMATIC!!!" are the ones that I had to remove from the list because their morphology was wrong also
 # after the rotation and shrinkage correction (like there were some branches that were going over the pia layer).
 # The ids with "# not problematic" are the ones that seemed to have problems (like looking at the hist using the method
 # soma_coord_and_pia_distance), but after the rotation and shrinkage correction they were ok.
 # There are also some cells that are commented in pairs, because the DataFrame contains two rows for the same cell,
 # and this creates some other problems in the analysis.
 
+# SV COMMENT: make two ordered lists, one for ok units (if computationally feasible) and one for "not problematic" cells. For records, you can
+# list the problematic (commented) cells in a separate list which is not used.
 
 specimens = [
     479013100,
@@ -1523,11 +1528,11 @@ specimens4 = [
     370351753,
     565459685,
 ]
-  
+
 
 ################################################################################################################################
 # VISUALIZATION
-
+# SV COMMENT: A short comment of what you are showing would be useful. Structure?
 # viz = Viz()
 # cell_id = 479013100
 # viz.plot_in_layer(cell_id, cell_feat_orient_new_df, VISp_mice_cells_idx)
