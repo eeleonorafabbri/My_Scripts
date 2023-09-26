@@ -1523,32 +1523,7 @@ specimens4 = [
     370351753,
     565459685,
 ]
-
-
-# This takes like 10 seconds for doing it for 100 cells
-# for cell_id in specimens:
-#     morph = reconstruct(cell_id)
-#     morph_df = pd.DataFrame(morph.compartment_list)
-#     cell_idx = cell_feat_orient_new_df[
-#         cell_feat_orient_new_df["specimen_id"] == cell_id
-#     ].index
-#     slice_angle = cell_feat_orient_new_df.loc[cell_idx, "estimated_slice_angle"].values
-#     upright_angle = cell_feat_orient_new_df.loc[cell_idx, "upright_angle"].values
-#     shrink_factor = cell_feat_orient_new_df.loc[
-#         cell_idx, "estimated_shrinkage_factor"
-#     ].values
-#     x_coord, y_coord, z_coord = proper_rotation(
-#         slice_angle,
-#         upright_angle,
-#         morph_df["x"],
-#         morph_df["y"],
-#         morph_df["z"],
-#         shrink_factor,
-#     )
-#     morph_df["x"] = x_coord
-#     morph_df["y"] = y_coord
-#     
-
+  
 
 ################################################################################################################################
 # VISUALIZATION
