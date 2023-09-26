@@ -8,7 +8,7 @@ Description:
 
 Usage:
     You can run this script with the following command:
-    python Organised_Script.py # SV COMMENT: This is not the name of the script
+    python Model_Download.py 
 
 Author:
     Eleonora Fabbri
@@ -31,14 +31,18 @@ from pathlib import Path
 import pandas as pd
 import json
 
+# I downloaded the query results from:
+# http://api.brain-map.org/api/v2/data/query.json?q=model::NeuronalModel,rma::include,neuronal_model_template[name$eq%27Biophysical%20-%20all%20active%27],rma::options[num_rows$eqall]
+# and http://api.brain-map.org/api/v2/data/query.json?q=model::NeuronalModel,rma::include,neuronal_model_template[name$eq%27Biophysical%20-%20perisomatic%27],rma::options[num_rows$eqall]
+# and http://api.brain-map.org/api/v2/data/query.json?criteria=model::ApiCellTypesSpecimenDetail,rma::criteria,[m__glif$gt0] for the GLIF cells
+# I took them from the Allen Institute Git repository (model-biophysical-passive_fitting-biophysical_archiver) and I saved them as json files
 
-with open(
-    "/opt3/Eleonora/data/query_perisomatic.json", "r"
-) as file:  # SV COMMENT: The root path needs to be parameterized, for others to use this script and to reduce repeating code.
+query_dir = "/opt3/Eleonora/data"  # This is the directory where I saved the query results
+with open(query_dir + "/query_perisomatic.json", "r") as file:
     perisomatic_data = json.load(file)
-with open("/opt3/Eleonora/data/query_all_active.json", "r") as file:
+with open(query_dir + "/query_all_active.json", "r") as file:
     all_active_data = json.load(file)
-with open("/opt3/Eleonora/data/query_glif.json", "r") as file:
+with open(query_dir + "/query_glif.json", "r") as file:
     glif_data = json.load(file)
 
 msg_list = perisomatic_data["msg"]
@@ -50,12 +54,12 @@ msg_all_act_df = pd.json_normalize(msg_list)
 all_active_id_list = msg_all_act_df.id
 
 
-base_dir = Path(
+download_folder_dir = Path(
     "/opt3/Eleonora/data/First_try_download/"
-)  # SV COMMENT: Is the name First_try_download valid, or does it refer to your buildup process?
-perisomatic_dir = base_dir / "perisomatic"
-all_active_dir = base_dir / "all_active"
-glif_dir = base_dir / "glif"
+)  # This is the directory of the main folder where I want to save the data
+perisomatic_dir = download_folder_dir / "perisomatic"
+all_active_dir = download_folder_dir / "all_active"
+glif_dir = download_folder_dir / "glif"
 
 
 # Download perisomatic and all_active data:
@@ -128,8 +132,10 @@ for neuronal_model_id, specimen_id in zip(neuronal_model_id_list, specimen_id_li
         print(f"Neuron {neuronal_model_id} already downloaded")
 
 
-# The cells that has glif data are a lot, so I started to download the cells that are in the cell_feat_orientation_data.csv file
-# SV COMMENT: This comment is hard to understand. Are you downloading only part of the data? What data is in the cell_feat_orientation_data.csv?
+# There're a lot of cells that have glif data, so I didn't downloaded all of them, but I started from the cells 
+# on which I had morphological and electrophysiological data (that are contained in the cell_feat_orientation_data.csv file, created in 
+# the Organised_Script.py script).
+
 cell_feat_orient_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_orientation_data.csv")
 
 glif_common_id = set(cell_feat_orient_df.specimen__id) & set(specimen_id_list)
@@ -138,7 +144,6 @@ glif_common_id = [int(id) for id in glif_common_id]
 linked_elements = [
     neuronal_model_id_list[specimen_id_list.index(id)] for id in glif_common_id
 ]
-
 for neuronal_model_id, specimen_id in zip(linked_elements, glif_common_id):
     neuron_folder = os.path.join(glif_dir, str(specimen_id))
     os.makedirs(neuron_folder, exist_ok=True)

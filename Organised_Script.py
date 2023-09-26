@@ -57,7 +57,7 @@ api_dendrite_color = "orange"
 # FUNCTIONS
 
 
-def do_it_all():  # SV COMMENT: This is not very informative name of a function
+def get_features_df():
     """
     This function returns 3 different DataFrames (taken from the Allen, like
     using ctc and methods):
@@ -80,236 +80,6 @@ def reconstruct(id_cell):
     morphology = ctc.get_reconstruction(id_cell)
     return morphology
 
-
-def which_layer(layer, cell_feat_df):
-    """
-    Return the indices of cells in the specified layer.
-
-    Parameters
-    ----------
-    layer : str ('1', '2', '2/3', '3', '4', '5', '6', '6a', '6b')('2/3','6a', '6b' are only for mice)
-        The layer of interest. This has to be a string specifying the layer's name.
-
-    cell_feat_df : pandas.DataFrame
-        A DataFrame containing cell features, including a column "structure__layer" that
-        indicates the layer for each cell.
-
-    Returns
-    -------
-    pandas.core.indexes.numeric.Int64Index
-        An array of indices corresponding to the cells in the specified layer.
-
-    Notes
-    -----
-    This function filters the cells based on the specified layer and returns their indices.
-
-
-    Examples
-    --------
-    >>> layer_indices = which_layer('2', cell_feat_df)
-    >>> print(layer_indices)
-    Int64Index([  4,   5,  22,  24,  36, 148, 159, 203, 215, 228, 323, 338, 370,
-            391, 435, 462, 465, 468, 539, 630],
-           dtype='int64')
-
-
-    """
-
-    cells_in_layer = cell_feat_df[
-        cell_feat_df["structure__layer"].values == layer
-    ].index
-    return cells_in_layer
-
-
-def spiny_or_aspiny_cells(cell_feat_df):
-    """
-    Return the indices of spiny and aspiny cells in the given DataFrame.
-
-    Parameters:
-    -----------
-    cell_feat_df : pandas.DataFrame
-        A DataFrame containing cell features with a "tag__dendrite_type" column.
-
-    Returns:
-    --------
-    spiny_cells : pandas.Int64Index
-        An Int64Index containing indices corresponding to spiny cells in the DataFrame.
-
-    aspiny_cells : pandas.Int64Index
-        An Int64Index containing indices corresponding to aspiny cells in the DataFrame.
-
-    Notes:
-    ------
-    This function takes a DataFrame containing cell features as input and identifies
-    the spiny and aspiny cells based on the values in the "tag__dendrite_type" column.
-    It returns two separate Int64Index objects, one for spiny cells and one for aspiny cells.
-
-    Example:
-    --------
-    # Calling the function, using cell_feat_df to get all the indices of spiny and aspiny cells
-
-    >>> spiny_indices, aspiny_indices = spiny_or_aspiny_cells(cell_feat_df)
-
-    >>> print("Spiny cell indices:", spiny_indices)
-    Spiny cell indices: Int64Index([  0,   1,   2,   4,   5,   6,  10,  11,  12,  14,
-            ...
-            682, 684, 685, 686, 687, 689, 690, 696, 699, 700],
-           dtype='int64', length=354)
-
-    >>> print("Aspiny cell indices:", aspiny_indices)
-    Aspiny cell indices: Int64Index([  3,   7,   8,   9,  13,  16,  17,  20,  25,  26,
-            ...
-            680, 681, 683, 688, 691, 692, 693, 694, 695, 697],
-           dtype='int64', length=298)
-
-
-    """
-
-    spiny_cells = cell_feat_df[
-        cell_feat_df["tag__dendrite_type"].values == "spiny"
-    ].index
-    aspiny_cells = cell_feat_df[
-        cell_feat_df["tag__dendrite_type"].values == "aspiny"
-    ].index
-    return spiny_cells, aspiny_cells
-
-
-def species(cell_feat_df):
-    """
-    Return the indices of human and mice cells in the given DataFrame.
-
-    Parameters:
-    -----------
-    cell_feat_df : pandas.DataFrame
-        A DataFrame containing cell features with a "donor__species" column.
-
-    Returns:
-    --------
-    human_cells : pandas.Int64Index
-        An Int64Index containing indices corresponding to human cells in the DataFrame.
-
-    mice_cells : pandas.Int64Index
-        An Int64Index containing indices corresponding to mice cells in the DataFrame.
-
-    Notes:
-    ------
-    This function takes a DataFrame containing cell features as input and identifies
-    the human and mice cells based on the values in the "donor__species" column.
-    It returns two separate Int64Index objects, one for human cells and one for mice cells.
-
-    Example:
-    --------
-    # Calling the function, using cell_feat_df to get all the indices of human and mice cells
-
-    >>> human_indices, mice_indices = species(cell_feat_df)
-
-    >>> print('Human cell indices:', human_indices)
-    Human cell indices: Int64Index([  0,   1,   4,   5,   6,   7,  11,  14,  15,  22,
-            ...
-            670, 671, 672, 682, 683, 690, 691, 697, 699, 700],
-           dtype='int64', length=164)
-
-    >>> print('Mice cell indices:', mice_indices)
-    Mice cell indices: Int64Index([  2,   3,   8,   9,  10,  12,  13,  16,  17,  18,
-            ...
-            686, 687, 688, 689, 692, 693, 694, 695, 696, 698],
-           dtype='int64', length=537)
-
-
-    """
-
-    human_cells = cell_feat_df[
-        cell_feat_df["donor__species"].values == "Homo Sapiens"
-    ].index
-    mice_cells = cell_feat_df[
-        cell_feat_df["donor__species"].values == "Mus musculus"
-    ].index
-    return human_cells, mice_cells
-
-
-def _layer_type_species(layer, spex, neur_type, cell_feat_df):
-    """
-    It's a previous (and worse) version of the function apply_filters.
-
-    Filter and return a DataFrame containing cells that meet specified conditions.
-
-    This function filters cells based on the given layer, species, and spiny/aspiny features
-    and returns a DataFrame containing the matching cells.
-
-    Parameters:
-    -----------
-    layer : str
-        The layer of interest for cell selection ('1', '2', '2/3', '3', '4', '5', '6', '6a', '6b',
-        ('2/3','6a', '6b' are only for mice)).
-
-    spex : str
-        The species of interest ('Homo Sapiens', 'Mus musculus').
-
-    neur_type : str
-        The type of neurons ('spiny', 'aspiny').
-
-    cell_feat_df : pandas.DataFrame
-        A DataFrame containing cell features with relevant columns.
-
-    Returns:
-    --------
-    filtered_cells_df : pandas.DataFrame
-        A DataFrame containing cells that meet the specified conditions.
-
-    Notes:
-    ------
-    This function filters cells based on the specified layer, species, and neuron type.
-    It first identifies cells in the specified layer using the `which_layer` function.
-    Then, it determines the relevant species and neuron type cells based on precomputed
-    indices (e.g., `human_cells`, `mice_cells`, `spiny_cells`, `aspiny_cells`).
-
-    Example:
-    --------
-
-    # Call the function, using cell_feat_df to filter all cells based on specified conditions
-    filtered_cells = layer_type_species("Layer 5", "Homo Sapiens", "spiny", cell_feat_df)
-
-    >>> print(filtered_cells)
-
-            Unnamed: 0  adaptation     avg_isi  electrode_0_pa  f_i_curve_slope  ...                donor__race  donor__years_of_seizure_history  donor__species    donor__id  donor__name
-    1             1         NaN         NaN      -24.887498    -3.913630e-19  ...                    unknown                              0.0    Homo Sapiens  548298531.0   H16.06.012
-    11           11    0.036900   39.338333      -41.105001     3.643333e-01  ...                    unknown                             60.0    Homo Sapiens  569800644.0   H17.03.002
-    27           27    0.058938  181.252000      -51.939997     1.046679e-01  ...                    unknown                             27.0    Homo Sapiens  571364629.0   H17.06.005
-    30           30    0.975859  368.660000      -88.739995     7.859477e-02  ...                   Hispanic                              7.0    Homo Sapiens  527747035.0   H16.06.008
-    74           74    0.344568  188.473333      -21.667499     1.085490e-01  ...         White or Caucasian                              3.0    Homo Sapiens  529678110.0   H16.06.010
-    127         127    0.291637  178.660000      -10.370000     9.494275e-02  ...                    unknown                             18.0    Homo Sapiens  567704703.0   H17.06.003
-    161         161    0.092482   76.635000       43.950003     2.691860e-01  ...         White or Caucasian                              0.0    Homo Sapiens  576060516.0   H17.06.007
-    176         176    0.638107  319.506667       38.937499     5.200000e-02  ...                    unknown                             18.0    Homo Sapiens  614077275.0   H17.03.011
-    217         217    0.794696  148.950000       93.994999     1.101942e-01  ...                    unknown                             11.0    Homo Sapiens  571458187.0   H17.06.006
-    324         324    0.464052  232.546667       -9.267500     9.130094e-02  ...                    unknown                             11.0    Homo Sapiens  571458187.0   H17.06.006
-    330         330    0.008328   83.300000      -81.472495     1.386713e-01  ...         White or Caucasian                              5.0    Homo Sapiens  504921484.0   H16.06.004
-    347         347         NaN   17.220000       14.232500     3.430851e-02  ...                   Hispanic                              7.0    Homo Sapiens  527747035.0   H16.06.008
-    349         349    0.048323  107.275000      -22.975002     1.526107e-01  ...                    unknown                              6.0    Homo Sapiens  536912860.0   H16.03.006
-    411         411    0.033096  127.260000        4.520000     1.414662e-01  ...                    unknown                             27.0    Homo Sapiens  571364629.0   H17.06.005
-    517         517    0.019458   98.622222      -36.487501     1.653543e-01  ...                    unknown                             60.0    Homo Sapiens  569800644.0   H17.03.002
-    532         532         NaN   91.720000       10.897500     2.833333e-02  ...                    unknown                              0.0    Homo Sapiens  548298531.0   H16.06.012
-    583         583    0.064593   87.952727        1.727500     1.979167e-01  ...                    unknown                             33.0    Homo Sapiens  528574320.0   H16.06.009
-    615         615    0.140634  139.516667      -36.357497     1.051870e-01  ...                   Hispanic                              7.0    Homo Sapiens  527747035.0   H16.06.008
-    639         639    0.041217   92.394000      -57.452505     1.604610e-01  ...  Black or African American                              9.0    Homo Sapiens  561414332.0   H16.06.013
-    690         690         NaN    9.680000       -7.650000     5.086957e-02  ...         White or Caucasian                              3.0    Homo Sapiens  529678110.0   H16.06.010
-
-
-    """
-
-    cells_in_layer = which_layer(layer, cell_feat_df)
-    if spex == "Homo Sapiens":
-        spex_cells = human_cells
-    if spex == "Mus musculus":
-        spex_cells = mice_cells
-    if neur_type == "spiny":
-        type_cells = spiny_cells
-    if neur_type == "aspiny":
-        type_cells = aspiny_cells
-    layer_type_spex = set(cells_in_layer) & set(type_cells) & set(spex_cells)
-    layer_type_spex_idx = np.array(list(layer_type_spex))
-    layer_type_spex_idx.sort()
-    layer_type_spex_idx_df = cell_feat_df.loc[layer_type_spex_idx]
-    return layer_type_spex_idx_df
 
 
 def axon_or_dendrite(morph_df):
@@ -710,75 +480,6 @@ def calc_distance_from_pia(cell_id, idx_node, cell_feat_orient_new_df):
     return distance_from_pia
 
 
-def _species_area(spex, area, cell_feat_orient_df):
-    """
-    It's a previous (and worse) version of the function apply_filters.
-
-    Filter and return a DataFrame containing cells based on species and brain area conditions.
-
-    This function filters a DataFrame of cell features based on two conditions: species ('spex')
-    and brain area ('area'). It returns a DataFrame containing cells that satisfy both conditions.
-
-    Parameters:
-    -----------
-    spex : str
-        The species condition. Options are 'Mus Musculus' for mice or 'Homo Sapiens' for humans.
-
-    area : str
-        The brain area condition. Options depend on the species:
-        - For humans: 'MTG', 'MFG', 'AnG', 'PLP', 'TemL', 'ITG', 'IFG', 'FroL', 'SFG'.
-        - For mice: 'VISp', 'VISpor', 'VISpm', 'VISal', 'VISl', 'VISrl', 'VISam', 'VISli', 'VISpl'.
-
-    cell_feat_orient_df : pandas.DataFrame
-        A DataFrame containing cell features, including species and brain area information.
-
-    Returns:
-    --------
-    filtered_df : pandas.DataFrame
-        A DataFrame containing cells that meet the specified species and brain area conditions.
-
-    Notes:
-    ------
-    This function filters cells based on two conditions: species and brain area. It returns a
-    DataFrame containing the cells that satisfy both conditions.
-
-    Example:
-    --------
-
-    # Filter cells for 'Homo Sapiens' species in the 'MTG' area
-    filtered_cells = _species_area('Homo Sapiens', 'MTG', cell_feat_orient_df)
-
-    print("Filtered cells:")
-    print(filtered_cells)
-    Filtered cells:
-        Unnamed: 0  adaptation     avg_isi  electrode_0_pa  f_i_curve_slope  ...  me-type  upright_angle  soma_distance_from_pia  estimated_shrinkage_factor  estimated_slice_angle
-    0             0         NaN  134.700000       22.697498         0.083355  ...      NaN            NaN                     NaN                         NaN                    NaN
-    5             5    0.306257  168.450000       -7.342500         0.072630  ...      NaN            NaN                     NaN                         NaN                    NaN
-    6             6    0.322543    8.650000       15.299999         0.032146  ...      NaN            NaN                     NaN                         NaN                    NaN
-    11           11    0.036900   39.338333      -41.105001         0.364333  ...      NaN            NaN                     NaN                         NaN                    NaN
-    14           14    0.055946   95.650000     -103.442498         0.156934  ...      NaN            NaN                     NaN                         NaN                    NaN
-    ..          ...         ...         ...             ...              ...  ...      ...            ...                     ...                         ...                    ...
-    671         671    0.001054   21.326522       21.960000         0.633296  ...      NaN            NaN                     NaN                         NaN                    NaN
-    672         672    0.004612   24.391000       -1.805000         0.615641  ...      NaN            NaN                     NaN                         NaN                    NaN
-    682         682    0.179194  245.906667      -89.892496         0.057143  ...      NaN            NaN                     NaN                         NaN                    NaN
-    683         683    0.196552    5.800000       18.352498         0.014894  ...      NaN            NaN                     NaN                         NaN                    NaN
-    690         690         NaN    9.680000       -7.650000         0.050870  ...      NaN            NaN                     NaN                         NaN                    NaN
-
-
-
-    """
-
-    species_cells = cell_feat_orient_df[
-        cell_feat_orient_df["donor__species"].values == spex
-    ].index
-    area_cells = cell_feat_orient_df[
-        cell_feat_orient_df["structure_parent__acronym"].values == area
-    ].index
-    species_area_cells = set(species_cells) & set(area_cells)
-    species_area_idx = np.array(list(species_area_cells))
-    species_area_idx.sort()
-    species_area_idx_df = cell_feat_orient_df.loc[species_area_idx]
-    return species_area_idx_df
 
 
 def apply_filters(spex, area, layer, neur_type, cell_feat_orient_df):
@@ -873,7 +574,11 @@ def apply_filters(spex, area, layer, neur_type, cell_feat_orient_df):
 
 
 ##########################################################################################################
-# VARIABLE PARAMETERS # SV COMMENT: To do what? An overall comment/view would be helpful.
+# VARIABLE PARAMETERS 
+# Variable parameters to try out the functions and have a general example of how they work.
+# I got these values from the cell_feat_orient_df, looking at the columns that I was 
+# interested in (e.g. 'structure__layer', 'donor__species', 'tag__dendrite_type', 'estimated_slice_angle',
+# 'upright_angle', 'estimated_shrinkage_factor', etc.)
 
 download_recos = False
 
@@ -885,107 +590,101 @@ spex = "Mus musculus"  # 'Homo Sapiens'
 
 neur_type = "spiny"  # 'aspiny'
 
-slice_angle = 0  # SV COMMENT: Where is this value coming from?
+slice_angle = 0  
 
-upright_angle = 176.909187120959  # SV COMMENT: Where is this value coming from?
+upright_angle = 176.909187120959  
 
-shrink_factor = 3.05757172357999  # SV COMMENT: Where is this value coming from?
+shrink_factor = 3.05757172357999  
 
 ##########################################################################################################
-# COMPUTATION W VARIABLE PARAMETERS # SV COMMENT: There are a lot of commented statements. If they are outdated, better remove them.
-# If not, comment on top of the lines, what to achieve by uncommenting the following lines.
+# COMPUTATION W VARIABLE PARAMETERS 
 
-ef_df, mor_df, feat_df = do_it_all()
-
-
-cell_feat_df = deepcopy(feat_df)
-needed_columns = [
-    "specimen__id",
-    "specimen__name",
-    "specimen__hemisphere",
-    "structure__id",
-    "structure__name",
-    "structure__acronym",
-    "structure_parent__id",
-    "structure_parent__acronym",
-    "structure__layer",
-    "nr__average_parent_daughter_ratio",
-    "nrwkf__id",
-    "erwkf__id",
-    "ef__avg_firing_rate",
-    "si__height",
-    "si__width",
-    "si__path",
-    "csl__x",
-    "csl__y",
-    "csl__z",
-    "csl__normalized_depth",
-    "cell_reporter_status",
-    "m__glif",
-    "m__biophys",
-    "m__biophys_perisomatic",
-    "m__biophys_all_active",
-    "tag__apical",
-    "tag__dendrite_type",
-    "morph_thumb_path",
-    "ephys_thumb_path",
-    "ephys_inst_thresh_thumb_path",
-    "donor__age",
-    "donor__sex",
-    "donor__disease_state",
-    "donor__race",
-    "donor__years_of_seizure_history",
-    "donor__species",
-    "donor__id",
-    "donor__name",
-]
-
+# If I need to rebuild or modify the cell_feat_df or the other DataFrames, I can uncomment these lines.
+# ef_df, mor_df, feat_df = get_features_df()
+# cell_feat_df = deepcopy(feat_df)
+# needed_columns = [
+#     "specimen__id",
+#     "specimen__name",
+#     "specimen__hemisphere",
+#     "structure__id",
+#     "structure__name",
+#     "structure__acronym",
+#     "structure_parent__id",
+#     "structure_parent__acronym",
+#     "structure__layer",
+#     "nr__average_parent_daughter_ratio",
+#     "nrwkf__id",
+#     "erwkf__id",
+#     "ef__avg_firing_rate",
+#     "si__height",
+#     "si__width",
+#     "si__path",
+#     "csl__x",
+#     "csl__y",
+#     "csl__z",
+#     "csl__normalized_depth",
+#     "cell_reporter_status",
+#     "m__glif",
+#     "m__biophys",
+#     "m__biophys_perisomatic",
+#     "m__biophys_all_active",
+#     "tag__apical",
+#     "tag__dendrite_type",
+#     "morph_thumb_path",
+#     "ephys_thumb_path",
+#     "ephys_inst_thresh_thumb_path",
+#     "donor__age",
+#     "donor__sex",
+#     "donor__disease_state",
+#     "donor__race",
+#     "donor__years_of_seizure_history",
+#     "donor__species",
+#     "donor__id",
+#     "donor__name",
+# ]
+# not_needed_columns = [
+#     "nr__number_bifurcations",
+#     "nr__average_contraction",
+#     "nr__reconstruction_type",
+#     "nr__max_euclidean_distance",
+#     "nr__number_stems",
+#     "ef__fast_trough_v_long_square",
+#     "ef__upstroke_downstroke_ratio_long_square",
+#     "ef__adaptation",
+#     "ef__f_i_curve_slope",
+#     "ef__threshold_i_long_square",
+#     "ef__tau",
+#     "ef__avg_isi",
+#     "ef__ri",
+#     "ef__peak_t_ramp",
+#     "ef__vrest",
+#     "line_name",
+# ]
 # cell_feat_df = cell_feat_df.reindex(
 #     columns=cell_feat_df.columns.tolist() + needed_columns
 # )
 
-# cell_feat_df is the dataframe that contains all the features of the cells, but it's not complete yet because it has no info on angle, shrinkage, etc.
+# the dataframe cell_feat_df is the one that contains all the features of the cells, but it's not complete yet because it has no info on angle, shrinkage, etc.
 cell_feat_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_data.csv")
 
-not_needed_columns = [
-    "nr__number_bifurcations",
-    "nr__average_contraction",
-    "nr__reconstruction_type",
-    "nr__max_euclidean_distance",
-    "nr__number_stems",
-    "ef__fast_trough_v_long_square",
-    "ef__upstroke_downstroke_ratio_long_square",
-    "ef__adaptation",
-    "ef__f_i_curve_slope",
-    "ef__threshold_i_long_square",
-    "ef__tau",
-    "ef__avg_isi",
-    "ef__ri",
-    "ef__peak_t_ramp",
-    "ef__vrest",
-    "line_name",
-]
 
+# # To see if a cell has morphological reconstruction
+# if download_recos == True:
+#     for this_row in feat_df.index:
+#         try:
+#             file_name = f'specimen_id_{feat_df.loc[this_row,"specimen_id"]}'
+#             full_filename = output_dir / file_name
+#             print(full_filename)
+#             ex = ctc.get_reconstruction(
+#                 feat_df.loc[this_row, "specimen_id"], file_name=full_filename
+#             )
+#         except Exception:
+#             print(
+#                 f'Reco not found for cell {feat_df.loc[this_row,"specimen_id"]} at row={this_row}'
+#             )
 
-if download_recos == True:  # SV COMMENT: What is the "reco"? Structural reconstruction?
-    for this_row in feat_df.index:
-        try:
-            file_name = f'specimen_id_{feat_df.loc[this_row,"specimen_id"]}'
-            full_filename = output_dir / file_name
-            print(full_filename)
-            ex = ctc.get_reconstruction(
-                feat_df.loc[this_row, "specimen_id"], file_name=full_filename
-            )
-        except Exception:
-            print(
-                f'Reco not found for cell {feat_df.loc[this_row,"specimen_id"]} at row={this_row}'
-            )
-
-# I am merging the data from this two dataframes (cell_feat_df and cell_df) in order to have all the info in one dataframe (cell_feat_df)
+# # I am merging the data from this two dataframes (cell_feat_df and cell_df) in order to have these info in one dataframe (cell_feat_df)
 # cell_df = pd.read_csv("/opt3/Eleonora/data/cell_types_specimen_details_3.csv")
-
-morph = reconstruct(cell_id)
-morph_df = pd.DataFrame(morph.compartment_list)
 
 # common_id = set(cell_df.specimen__id) & set(feat_df.specimen_id)
 
@@ -995,32 +694,19 @@ morph_df = pd.DataFrame(morph.compartment_list)
 #     row_index = cell_feat_df[cell_feat_df["specimen_id"].values == specimen__id].index
 #     cell_feat_df.loc[row_index, needed_columns] = id_row.values
 
-cells_in_layer = which_layer(layer, cell_feat_df)
 
-spiny_cells, aspiny_cells = spiny_or_aspiny_cells(cell_feat_df)
+# # I am merging the data from this two dataframes (cell_feat_df and cell_feat_orient_df) in order to have all the info (also on oritntation)
+# # in one dataframe (cell_feat_df); I commented this part because I have already done it and I saved the new dataframe in a csv file.
 
-human_cells, mice_cells = species(cell_feat_df)
-
-layer_type_spex_idx_df = _layer_type_species(layer, spex, neur_type, cell_feat_df)
-
-axons_idx, basal_dendrite_idx, apical_dendrite_idx = axon_or_dendrite(morph_df)
-
-mice_spiny_cells_idx = set(mice_cells) & set(spiny_cells)
-
-# This dataframe contains only the data on agles, shrinkage, etc. but only for mice cells
-orientation_df = pd.read_csv(
-    "/opt3/Eleonora/data/orientation_data.csv"
-)  # SV COMMENT: Only used in the commented out code below.
+# orientation_df = pd.read_csv(
+#     "/opt3/Eleonora/data/orientation_data.csv"
+# )  # This dataframe contains only the data on agles, shrinkage, etc. but only for mice cells 
 # orient_id = set(orientation_df.specimen_id) & set(cell_feat_df.specimen_id)
-
-
 # cell_feat_orient_df = deepcopy(cell_feat_df)
-
 # cell_feat_orient_df[list(orientation_df.columns)] = pd.DataFrame(
 #     [[np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan]],
 #     index=cell_feat_orient_df.index,
 # )
-
 # for cell_id in orient_id:
 #     id_row = orientation_df.loc[
 #         orientation_df["specimen_id"] == cell_id, list(orientation_df.columns)
@@ -1029,45 +715,38 @@ orientation_df = pd.read_csv(
 #     row_index = cell_feat_orient_df[cell_feat_df["specimen_id"].values == cell_id].index
 #     cell_feat_orient_df.loc[row_index, list(orientation_df.columns)] = id_row.values
 
+
 # This dataframe is the definitive one, cointaining all the data for all the cells, including angles, shrinkage, etc.;
 # it has nan values for the cells that are not mice on angle columns.
 cell_feat_orient_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_orientation_data.csv")
 
 
+# I commented these lines because they are not necessary, but if one don't want the nan values in the angle columns
+# for the human cells, they can be uncommented.
+
 # cell_feat_orient_new_df = cell_feat_orient_df.dropna(
 #     subset=["soma_distance_from_pia"]
 # )
 # It's the dataframe that contains only data of cells whose angles, shrinkage, etc.,  is not nan
-cell_feat_orient_new_df = pd.read_csv("/opt3/Eleonora/data/oriented_data.csv")
-
-spiny_orient_cells, aspiny_orient_cells = spiny_or_aspiny_cells(cell_feat_orient_new_df)
-
-human_orient_cells, mice_orient_cells = species(cell_feat_orient_new_df)
-
-mice_spiny_orient_cells_idx = set(spiny_orient_cells) & set(mice_orient_cells)
-
-VISp_cells_idx = cell_feat_orient_new_df[
-    cell_feat_orient_new_df["structure_parent__acronym"].values == "VISp"
-].index
-
-VISp_mice_cells_idx = set(mice_orient_cells) & set(VISp_cells_idx)
+# cell_feat_orient_new_df = pd.read_csv("/opt3/Eleonora/data/oriented_data.csv")
 
 
-# Here I analyzed the morphology of the cells, making a list of their specimens. I have divided them in 4 grpups,
-# just for convenience.
-# The ids with "# PROBLEMATIC!!!" are the ones that I had to remove from the list because their morphology was wrong also
-# after the rotation and shrinkage correction (like there were some branches that were going over the pia layer).
-# The ids with "# not problematic" are the ones that seemed to have problems (like looking at the hist using the method
-# soma_coord_and_pia_distance), but after the rotation and shrinkage correction they were ok.
-# There are also some cells that are commented in pairs, because the DataFrame contains two rows for the same cell,
-# and this creates some other problems in the analysis.
+# Here I analyzed the morphology of the cells, making a list of their specimens. 
+# I removed from those specimens the ones that were repeated (because the DataFrame contains two rows for the 
+# same cell) and that caused several problems in the analysis.
+# I have divided the left ones in 3 lists:
+# the list 'good_specimens' contains the ids of the cells that are ok (I have checked them by looking at the hist
+# of the soma_distance_from_pia and the soma_distance_from_pia_shrinked); the list 'not_problematic_specimens'
+# contains the ids of the cells that seemed to have problems (like looking at the hist using the method
+# soma_coord_and_pia_distance), but after the rotation and shrinkage correction they were ok; the list
+# 'problematic_specimens' contains the ids of the cells that I had to remove from the list because their morphology
+# was wrong also after the rotation and shrinkage correction (like there were some branches that were going over the
+# pia layer); I commented this last list, but I left it here because it can be useful to see which cells were
+# problematic.
 
-# SV COMMENT: make two ordered lists, one for ok units (if computationally feasible) and one for "not problematic" cells. For records, you can
-# list the problematic (commented) cells in a separate list which is not used.
 
-specimens = [
+good_specimens = [
     479013100,
-    # 567952169,  # not problematic
     582644266,
     501799874,
     497611660,
@@ -1085,7 +764,6 @@ specimens = [
     471141261,
     314900022,
     512322162,
-    # 313862167,313862167,
     585832440,
     502999078,
     573404307,
@@ -1094,16 +772,11 @@ specimens = [
     580162374,
     386049446,
     397353539,
-    # 475585413,  # PROBLEMATIC !!!!!
-    # 501845152,  # not problematic
-    # 329550137,  # not problematic
     488117124,
     574067499,
-    # 486560376,  # not problematic
     485184849,
     567354967,
     591268268,
-    # 478110866,478110866,
     485835016,
     589760138,
     480114344,
@@ -1113,15 +786,12 @@ specimens = [
     562541627,
     574734127,
     476616076,
-    # 565417112,565417112,
     333785962,
     476048909,
     471087830,
     585952606,
-    # 524689239,  # not problematic
     476451456,
     471767045,
-    # 321708130,321708130,
     480003970,
     480116737,
     483020137,
@@ -1136,21 +806,16 @@ specimens = [
     487601493,
     471786879,
     580010290,
-    # 473540161,473540161,
     480124551,
-    # 579662957,  # not problematic
     555345752,
     476126528,
     478892782,
     584231995,
     557037024,
-    # 556968207,556968207,
     486111903,
-    # 582917630,  # not problematic
     488501071,
     475202388,
     580161872,
-    # 585947309,  # not problematic
     475068599,
     519749342,
     510658021,
@@ -1161,18 +826,13 @@ specimens = [
     471077857,
     584872371,
     584680861,
-]
-
-specimens2 = [
     585944237,
     469798159,
     502359001,
-    # 515771244,  # not problematic
     484679812,
     486110216,
     563226105,
     479770916,
-    # 585841870,  # not problematic
     313862373,
     354190013,
     324025371,
@@ -1180,18 +840,13 @@ specimens2 = [
     536951541,
     485912047,
     323865917,
-    # 555341581,
-    # 555341581,
     570896413,
     571311039,
-    # 521409057,  # PROBLEMATIC !!!!!
     526531616,
     560678143,
     341442651,
     475744706,
     468193142,
-    # 565866518,
-    # 565866518,
     561985849,
     577369606,
     502269786,
@@ -1203,8 +858,6 @@ specimens2 = [
     607124114,
     565855793,
     487661754,
-    # 488680211,  # not problematic
-    # 396608557,  # not problematic
     490205998,
     483068687,
     563180078,
@@ -1214,24 +867,15 @@ specimens2 = [
     565880475,
     561940338,
     560753350,
-    # 476823462,  # not problematic
-    # 479704527,  # not problematic
     502978383,
-    # 562632795,
-    # 562632795,
     561325425,
     480169178,
     574036994,
-    # 466632464,  # not problematic
     578485753,
     382982932,
-    # 488677994,
-    # 488677994,
     473020156,
     488687894,
     586379590,
-    # 523748610,
-    # 523748610,
     592952680,
     314642645,
     527826878,
@@ -1241,13 +885,9 @@ specimens2 = [
     562003142,
     567312865,
     517077548,
-    # 555001065,  # not problematic
     466245544,
     479728896,
     571379222,
-    # 569072334,
-    # 569072334,
-    # 574038330,  # not problematic
     585925172,
     485574832,
     473601979,
@@ -1255,7 +895,6 @@ specimens2 = [
     395830185,
     486893033,
     530731648,
-    # 478058328,  # not problematic
     571396942,
     488697163,
     490387590,
@@ -1264,12 +903,7 @@ specimens2 = [
     509515969,
     469793303,
     575642695,
-]
-
-specimens3 = [
     490259231,
-    # 555089724,
-    # 555089724,
     584254833,
     598628992,
     485909730,
@@ -1278,34 +912,23 @@ specimens3 = [
     589442285,
     476054887,
     571306690,
-    # 535728342,  # not problematic
     476455864,
     589427435,
     483101699,
     585830272,
-    # 573622646,  # not problematic
     488680917,
     509003464,
     578774163,
-    # 509617624,
-    # 509617624,
     580005568,
     486262299,
     318733871,
     515464483,
-    # 570946690,  # not problematic
     354833767,
-    # 475549284,
-    # 475549284,
-    # 476086391,
-    # 476086391,
     534303031,
     583138568,
-    # 471410185,  # not problematic
     514767977,
     479225052,
     324493977,
-    # 527095729,  # PROBLEMATIC !!!!!
     560965993,
     586072188,
     485161419,
@@ -1316,11 +939,9 @@ specimens3 = [
     476562817,
     488504814,
     571867358,
-    # 485836906,  # not problematic
     329550277,
     348592897,
     579626068,
-    # 487099387,  # PROBLEMATIC !!!!! (but also for allen)
     480087928,
     583104750,
     614777438,
@@ -1333,8 +954,6 @@ specimens3 = [
     469704261,
     564349611,
     479179020,
-    # 572609108,  # not problematic
-    # 314831019,  # not problematic
     557874460,
     488695444,
     555241040,
@@ -1343,8 +962,6 @@ specimens3 = [
     589128331,
     569809287,
     580145037,
-    # 486896849,
-    # 486896849,
     570896453,
     320668879,
     561532710,
@@ -1354,7 +971,6 @@ specimens3 = [
     323452196,
     490485142,
     569998790,
-    # 583138230,  # not problematic
     473543792,
     473564515,
     485468180,
@@ -1367,9 +983,6 @@ specimens3 = [
     514824979,
     565120091,
     501845630,
-]
-
-specimens4 = [
     623185845,
     570438732,
     386970660,
@@ -1380,8 +993,6 @@ specimens4 = [
     590558808,
     565407476,
     486025194,
-    # 479721491,
-    # 479721491,
     526643573,
     471143169,
     323452245,
@@ -1403,15 +1014,11 @@ specimens4 = [
     603423462,
     482516713,
     327962063,
-    # 323475862,
-    # 323475862,
     506133241,
     477135941,
     547344442,
     547325858,
     584682764,
-    # 569810649,
-    # 569810649,
     585951863,
     476216637,
     508980706,
@@ -1421,19 +1028,14 @@ specimens4 = [
     333604946,
     517345160,
     488683425,
-    # 536306115,
-    # 536306115,
     586073850,
     560992553,
     567029686,
     574377552,
-    # 561934585,
-    # 561934585,
     567320213,
     527869035,
     522152249,
     517647182,
-    314822529,  #
     480353286,
     501841672,
     574992320,
@@ -1447,7 +1049,6 @@ specimens4 = [
     318808427,
     521938313,
     467703703,
-    485574721,  #
     471800189,
     481136138,
     503814817,
@@ -1455,7 +1056,6 @@ specimens4 = [
     485911892,
     475057898,
     320207387,
-    614767057,  #
     480122859,
     588712191,
     473611755,
@@ -1474,14 +1074,10 @@ specimens4 = [
     509881736,
     565415071,
     588402092,
-    # 556923554,
-    # 556923554,
     555697303,
     484564503,
     490382353,
     502367941,
-    # 534141324,
-    # 534141324,
     475623964,
     503286448,
     557252022,
@@ -1498,20 +1094,14 @@ specimens4 = [
     476263004,
     591278744,
     476457450,
-    # 593312584,
-    # 593312584,
     488420599,
     527116037,
-    # 477127614,
-    # 477127614,
     591265629,
     324521027,
     569965244,
     580014328,
     516362762,
     486502127,
-    # 569494755,
-    # 569494755,
     585805211,
     593321019,
     478497530,
@@ -1529,10 +1119,44 @@ specimens4 = [
     565459685,
 ]
 
+not_problematic_specimens = [
+    567952169,
+    501845152,
+    329550137,
+    486560376,
+    524689239,
+    579662957,
+    582917630,
+    515771244,
+    585841870,
+    488680211,
+    396608557,
+    476823462,
+    479704527,
+    466632464,
+    555001065,
+    574038330,
+    478058328,
+    535728342,
+    573622646,
+    570946690,
+    471410185,
+    485836906,
+    572609108,
+    314831019,
+    583138230,
+    314822529,
+    485574721,
+    614767057,
+]
+
+# problematic_specimens = [475585413, 521409057, 527095729, 487099387]
 
 ################################################################################################################################
 # VISUALIZATION
-# SV COMMENT: A short comment of what you are showing would be useful. Structure?
+
+# This is the plot of the cell with id=479013100, within its corresponding layer (I commented it because it's necessary only if
+# one wants to see this particular type of plot on this neuron, but it's a good example)
 # viz = Viz()
 # cell_id = 479013100
 # viz.plot_in_layer(cell_id, cell_feat_orient_new_df, VISp_mice_cells_idx)

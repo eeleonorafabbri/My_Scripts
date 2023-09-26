@@ -18,6 +18,9 @@ Date:
 
 """
 
+# #ATTENTION !!! : if I get an error ((the h5f files are unable to lock, whatever it means...), I need to set this environment variable BEFORE running this script
+# import os
+# os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
 # Cleanup
 from IPython import get_ipython
@@ -57,10 +60,6 @@ from pathlib import Path
 import pdb
 from copy import deepcopy
 
-# #ATTENTION: if I get an error ((the h5f files are unable to lock, whatever it means...), I need to set this environment variable BEFORE running this script
-# import os
-# os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
-# SV COMMENT: Raise this to top comment block, so that others know to set this environment variable before running this script.
 
 #######################################################################################################################################################
 
@@ -208,8 +207,8 @@ def get_json_parameters(specimen_id, cell_df):
     If the cell_type is perisomatic or all_active, returns a DataFrame with the columns:
     'section','name,'value', 'mechanism' (taken from its fit.json file).
     If the cell_type is GLIF, it returns his neuron_config.json file as a DataFrame.
-
-    Options: # SV COMMENT: Please give a reference to where (which publication, short format eg [FIRSTAUTH_YEAR_JOURNALNAME]) these options are defined.
+    
+    Options: (I got them "manually" from the json files) 
      - section: 'somatic', 'basal', 'apical'
      - name: for all_active: 'g_pas', 'e_pas', 'cm', 'Ra', 'gbar_NaV', 'gbar_K_T', 'gbar_Kv2like',
              'gbar_Kv3_1', 'gbar_SK', 'gbar_Ca_HVA', 'gbar_Ca_LVA', 'gamma_CaDynamics',
@@ -432,33 +431,6 @@ def merge_glif_df(specimens):
     return GLIF_df
 
 
-def _merge_glif_df2(specimens):
-    """
-    This function merges the glif_param_df of multiple neuron, given in input as a list con their specimen_id
-    """
-    # SV COMMENT: LOTS OF COMMENTED OUT CODE. ARE THESE LINES NECESSARY? IF YES, GIVE A COMMENT WHEN TO USE THEM
-    # GLIF_df = pd.DataFrame(columns=GLIF_columns)
-    # GLIF_df.specimen_id = specimens
-    GLIF_df = pd.DataFrame()
-    GLIF_df["specimen_id"] = specimens
-    for specimen_id in specimens:
-        peri_param_df, all_act_param_df, glif_param_df = get_json_parameters(
-            specimen_id, cell_df
-        )
-        # glif_param_df.drop(columns=['Column'], inplace=True)
-        # for each specimen_id, I want to create a new row in the GLIF_df DataFrame with the linked values to columns
-        for col in glif_param_df.Column:
-            value = glif_param_df.loc[glif_param_df.Column == col, "Value"].values[0]
-            # I want the index of specimen_id in GLIF_df
-            idx = GLIF_df[GLIF_df.specimen_id == specimen_id].index[0]
-            GLIF_df.loc[idx, col] = value
-    # I want to correct the display of the dataframe, to see the values in scientific notation
-    # GLIF_df['C'] = GLIF_df['C'].apply('{:.2e}'.format)
-    # GLIF_df['asc_amp_array_asc_amp_array_0'] = GLIF_df['asc_amp_array_asc_amp_array_0'].apply('{:.2e}'.format)
-    # GLIF_df['asc_amp_array_asc_amp_array_1'] = GLIF_df['asc_amp_array_asc_amp_array_1'].apply('{:.2e}'.format)
-    # GLIF_df['dt'] = GLIF_df['dt'].apply('{:.2e}'.format)
-    return GLIF_df
-
 
 def merge_biophys_df(specimens, cell_df):
     """
@@ -510,68 +482,28 @@ def merge_biophys_df(specimens, cell_df):
 
 # VARIABLE PARAMETERS
 
-# SV COMMENT: LOTS OF COMMENTED OUT CODE. ARE THESE LINES NECESSARY? IF YES, GIVE A COMMENT WHEN TO USE THEM
 
 # I just followed the tutorial from the Allen Institute website, but I made some changes to the code to let it work
-# I commented everything that it's not necessary
+# I commented everything that it's not necessary.
 ctc = CellTypesCache(manifest_file="cell_types/manifest.json")
 
-specimen_id = 471819401
+specimen_id = 471819401 # It's just an example
 
-base_dir = "/opt3/Eleonora/scripts/messy_things/"  # SV COMMENT: BASE DIR OF WHAT? PLEASE GIVE A MORE DESCRIPTIVE NAME
-
-# sweep_num = 4 # It's just an example
-
-# mV = 1.0e-3
-
-# ms = 1.0e-3
+# The directory 'example_dir' is the one where the model files will be saved, in my case it's the following one:
+download_dir = "/opt3/Eleonora/scripts/messy_things/"  
 
 # # a list of cell metadata for cells with reconstructions, download if necessary
 cells = ctc.get_cells(require_reconstruction=True)
-
-# # open the electrophysiology data of one cell, download if necessary
-# data_set = ctc.get_ephys_data(cells[0]["id"])
-
-# # read the reconstruction, download if necessary
-# reconstruction = ctc.get_reconstruction(cells[0]["id"])
-
-# data_set = ctc.get_ephys_data(specimen_id)
 
 sweeps = ctc.get_ephys_sweeps(specimen_id)
 sweep_numbers = defaultdict(list)
 for sweep in sweeps:
     sweep_numbers[sweep["stimulus_name"]].append(sweep["sweep_number"])
 
-# calculate features
-# cell_features = extract_cell_features(
-#     data_set,
-#     sweep_numbers["Ramp"],
-#     sweep_numbers["Short Square"],
-#     sweep_numbers["Long Square"],
-# )
-# # if you ran the examples above, you will have a NWB file here
-# file_name = "cell_types/specimen_485909730/ephys.nwb"
-# data_set = NwbDataSet(file_name)
-
+# If I want to use the following methods, I need to make the commented imports work properly (because now they're messed up)
 # sweep_numbers = data_set.get_sweep_numbers()
 # sweep_number = sweep_numbers[0]
 # sweep_data = data_set.get_sweep(sweep_number)
-
-# # spike times are in seconds relative to the start of the sweep
-# spike_times = data_set.get_spike_times(sweep_number)
-
-# # stimulus is a numpy array in amps
-# stimulus = sweep_data["stimulus"]
-
-# # response is a numpy array in volts
-# reponse = sweep_data["response"]
-
-# # sampling rate is in Hz
-# sampling_rate = sweep_data["sampling_rate"]
-
-# # start/stop indices that exclude the experimental test pulse (if applicable)
-# index_range = sweep_data["index_range"]
-
 
 # I obtained the json files from
 # http://api.brain-map.org/api/v2/data/query.json?q=model::NeuronalModel,rma::include,neuronal_model_template[name$eq%27Biophysical%20-%20all%20active%27],rma::options[num_rows$eqall]
@@ -586,22 +518,18 @@ with open("/opt3/Eleonora/data/query_glif.json", "r") as file:
     glif_data = json.load(file)
 
 
-# this list contains the neuronal_models_ids of the cells that have biophysical perisoamtic models
-# perisomatic_id_list = [item["id"] for item in perisomatic_data["msg"]]
+# This list contains the neuronal_models_ids of the cells that have biophysical perisoamtic models
 msg_list = perisomatic_data["msg"]
 msg_peri_df = pd.json_normalize(msg_list)
 perisomatic_id_list = msg_peri_df.id
 
-
-# this list contains the neuronal_models_ids of the cells that have biophysical all_active models
-# all_active_id_list = [item["id"] for item in all_active_data["msg"]]
+# This list contains the neuronal_models_ids of the cells that have biophysical all_active models
 msg_list = all_active_data["msg"]
 msg_all_act_df = pd.json_normalize(msg_list)
 all_active_id_list = msg_all_act_df.id
 
-
-# I want to correct the mainfest_file, so that it has also 'sweeps_by_type' a key
-os.chdir(base_dir)
+# I am correcting the mainfest_file, so that it has also 'sweeps_by_type' a key; it should be done for every neuron I want to simulate
+os.chdir(download_dir)
 os.system("nrnivmodl modfiles/")
 manifest_file = "manifest.json"
 manifest_dict = json.load(open(manifest_file))
@@ -616,10 +544,11 @@ json.dump(manifest_dict, open(manifest_file, "w"), indent=2)
 # sweep_num = 43 # It's one of the sweeps of the Long Square
 
 schema_legacy = dict(manifest_file=manifest_file)
-# runner.run(schema_legacy,procs=1,sweeps=[sweep_num])
 
-# SV COMMENT: MAYBE YOU CAN JUST GIVE LINK TO THE TUTORIAL?
-# This is the turorial for a simulation loop, from the Allen Institute website (with some changes):
+
+# This is the turorial for a simulation loop, from the Allen Institute website (with some changes to make it work);
+# the link to the tutorial is: http://alleninstitute.github.io/AllenSDK/biophysical_models.html.
+# If I want to use the following methods, I need to make the commented imports work properly (because now they're messed up)
 
 # my_args_dict={'manifest_file' : '/opt3/Eleonora/scripts/messy_things/manifest.json', 'axon_type' : 'truncated'}
 # description = load_description(my_args_dict)
@@ -635,20 +564,13 @@ schema_legacy = dict(manifest_file=manifest_file)
 # sweeps = run_params['sweeps']
 # junction_potential = description.data['fitting'][0]['junction_potential']
 # for sweep in sweeps:
-#     # try:
-#     #     my_utils.setup_iclamp(stimulus_path, sweep=sweep)
-#     # except:
-#     #     pdb.set_trace()
-
+#     my_utils.setup_iclamp(stimulus_path, sweep=sweep)
 #     # configure stimulus
 #     my_utils.setup_iclamp(stimulus_path, sweep=sweep)
-
 #     # configure recording
 #     vec = my_utils.record_values()
-
 #     h.finitialize()
 #     h.run()
-
 #     # write to an NWB File
 #     output_data = (np.array(vec['v']) - junction_potential) * mV
 #     # try:
@@ -657,14 +579,17 @@ schema_legacy = dict(manifest_file=manifest_file)
 #     #     pdb.set_trace()
 #     output.set_sweep(sweep, None, output_data)
 
-
 # t, v, stim_start, stim_end = get_sweep_data(stimulus_path, sweep_num)
 # plt.plot(t, v)
-os.chdir("/opt3/Eleonora/scripts")
 
-# SV COMMENT: SOUNDS HIGLY USEFUL. WHERE IS THIS USED? JUST FOR RUNNING THE ALLEN DEMO?
+# I am changing the directory to the one where the scripts are saved
+os.chdir("/opt3/Eleonora/My_scripts")
+
+
 # I found out that it's possible to use the functions in AllenSDK.doc_template.examples_root.examples.simple.utils, that are much more quicker because it doesn't
-# need to analize each sweep in a for loop, and get the same results as the simulation loop:
+# need to analize each sweep in a for loop, and get the same results as the simulation loop. 
+# It's just used to run the Allen demo and to get the output of the simulation loop for plots.
+# If I want to use the following methods, I need to make the commented imports work properly (because now they're messed up)
 
 # from AllenSDK.doc_template.examples_root.examples.simple.utils import Utils
 
@@ -678,6 +603,8 @@ os.chdir("/opt3/Eleonora/scripts")
 # hh.tstop = 20
 # hh.finitialize()
 # hh.run()
+# mV = 1.0e-3
+# ms = 1.0e-3
 # output_data2 = np.array(vec['v']) * mV
 # output_times2 = np.array(vec['t']) * ms
 # output2 = np.column_stack((output_times2, output_data2))
@@ -688,7 +615,6 @@ os.chdir("/opt3/Eleonora/scripts")
 
 
 # I imported the df that contains the cell features from Organised_Scripts.py
-
 cell_feat_orient_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_orientation_data.csv")
 
 cell_df = deepcopy(cell_feat_orient_df)
@@ -710,20 +636,6 @@ glif_specimen_id = specimen_id_list
 id = 464198958
 peri_param_df, all_act_param_df, glif_param_df = get_json_parameters(id, cell_df)
 
-# SV COMMENT: WHERE ARE THE FOLLOWING USED? SHORT COMMENT WOULD BE USEFUL.
-# GLIF_columns = ['specimen_id','El_reference', 'C', 'asc_amp_array_asc_amp_array_0', 'asc_amp_array_asc_amp_array_1',
-# 'init_threshold', 'threshold_reset_method_params_a_spike', 'threshold_reset_method_params_b_spike',
-# 'threshold_reset_method_name', 'th_inf', 'spike_cut_length','init_AScurrents_init_AScurrents_0',
-# 'init_AScurrents_init_AScurrents_1', 'init_voltage', 'threshold_dynamics_method_params_b_voltage',
-# 'threshold_dynamics_method_params_a_spike', 'threshold_dynamics_method_params_b_spike',
-# 'threshold_dynamics_method_params_a_voltage', 'threshold_dynamics_method_name', 'voltage_reset_method_params_a',
-# 'voltage_reset_method_params_b', 'voltage_reset_method_name', 'extrapolation_method_name', 'dt',
-# 'voltage_dynamics_method_name', 'El', 'asc_tau_array_asc_tau_array_0',
-# 'asc_tau_array_asc_tau_array_1', 'R_input', 'AScurrent_dynamics_method_name',
-# 'AScurrent_reset_method_params_r_r_0', 'AScurrent_reset_method_params_r_r_1',
-# 'AScurrent_reset_method_name', 'dt_multiplier', 'th_adapt', 'coeffs_a', 'coeffs_C',
-# 'coeffs_b', 'coeffs_G', 'coeffs_th_inf', 'coeffs_asc_amp_array_asc_amp_array_0',
-# 'coeffs_asc_amp_array_asc_amp_array_1', 'type']
 
 glif_specimens = [
     486111903,

@@ -1007,20 +1007,7 @@ class Viz(Analysis):
             )
             x_coord = [val - x_pia for val in x_coord]
             y_coord = [val - y_pia for val in y_coord]
-            # x_coord = -x_coord # SV COMMENT: ARE THE COMMENTED LINES STILL NECESSARY?
-            # y_coord = -y_coord
             ax.scatter(x_coord, y_coord, color=color)
-            # x_node, y_node, z_node = proper_rotation(
-            #     slice_angle,
-            #     upright_angle,
-            #     morph_df.loc[idx, "x"],
-            #     morph_df.loc[idx, "y"],
-            #     morph_df.loc[idx, "z"],
-            #     shrink_factor,
-            # )
-        # ax.invert_yaxis()
-        # ax.invert_xaxis()
-
         plt.ylabel("y")
         plt.xlabel("x")
         # plt.savefig("bad_cell_2.png")
@@ -1302,7 +1289,6 @@ class Viz(Analysis):
                 element="poly",
             )
 
-        # pdb.set_trace() # SV COMMENT: REMOVE
 
         red = mpatches.Patch(color="r", label="Layer 1")
         orange = mpatches.Patch(color="#ff7f0e", label="Layer 2")
