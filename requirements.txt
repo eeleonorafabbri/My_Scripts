@@ -1,0 +1,10 @@
+dependenicies:
+- pandas
+- numpy
+- matplotlib
+- seaborn
+- scipy
+- json
+- pynwb
+- pip
+- allensdk (install it via pip)
