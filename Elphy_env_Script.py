@@ -235,7 +235,7 @@ def get_json_parameters(specimen_id, cell_df):
     glif_param_df = pd.DataFrame()
 
     if cell_df.loc[row_idx, "m__biophys_perisomatic"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/First_try_download/perisomatic")
+        base_dir_path = Path("/opt3/Eleonora/data/Physiology/perisomatic")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "fit" in file:
@@ -261,7 +261,7 @@ def get_json_parameters(specimen_id, cell_df):
                     }
                 )
     if cell_df.loc[row_idx, "m__biophys_all_active"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/First_try_download/all_active")
+        base_dir_path = Path("/opt3/Eleonora/data/Physiology/all_active")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "fit" in file:
@@ -287,7 +287,7 @@ def get_json_parameters(specimen_id, cell_df):
                     }
                 )
     if cell_df.loc[row_idx, "m__glif"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/First_try_download/glif")
+        base_dir_path = Path("/opt3/Eleonora/data/Physiology/glif")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "config" in file:
@@ -347,7 +347,7 @@ def get_dict(specimen_id, cell_df):
     all_act_param_dict = {}
     glif_param_dict = {}
     if cell_df.loc[row_idx, "m__biophys_perisomatic"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/First_try_download/perisomatic")
+        base_dir_path = Path("/opt3/Eleonora/data/Physiology/perisomatic")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "fit" in file:
@@ -362,7 +362,7 @@ def get_dict(specimen_id, cell_df):
                     value = entry["value"]
                     peri_param_dict[json_key] = value
     if cell_df.loc[row_idx, "m__biophys_all_active"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/First_try_download/all_active")
+        base_dir_path = Path("/opt3/Eleonora/data/Physiology/all_active")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "fit" in file:
@@ -377,7 +377,7 @@ def get_dict(specimen_id, cell_df):
                     value = entry["value"]
                     all_act_param_dict[json_key] = value
     if cell_df.loc[row_idx, "m__glif"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/First_try_download/glif")
+        base_dir_path = Path("/opt3/Eleonora/data/Physiology/glif")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "config" in file:
@@ -505,16 +505,19 @@ for sweep in sweeps:
 # sweep_number = sweep_numbers[0]
 # sweep_data = data_set.get_sweep(sweep_number)
 
-# I obtained the json files from
+
+# I downloaded the query results from:
 # http://api.brain-map.org/api/v2/data/query.json?q=model::NeuronalModel,rma::include,neuronal_model_template[name$eq%27Biophysical%20-%20all%20active%27],rma::options[num_rows$eqall]
 # and http://api.brain-map.org/api/v2/data/query.json?q=model::NeuronalModel,rma::include,neuronal_model_template[name$eq%27Biophysical%20-%20perisomatic%27],rma::options[num_rows$eqall]
 # and http://api.brain-map.org/api/v2/data/query.json?criteria=model::ApiCellTypesSpecimenDetail,rma::criteria,[m__glif$gt0] for the GLIF cells
-# I took them from the Allen Institute Git repository (model-biophysical-passive_fitting-biophysical_archiver)
-with open("/opt3/Eleonora/data/query_perisomatic.json", "r") as file:
+# I took them from the Allen Institute Git repository (model-biophysical-passive_fitting-biophysical_archiver) and I saved them as json files
+
+query_dir = "/opt3/Eleonora/data"  # This is the directory where I saved the query results
+with open(query_dir + "/query_perisomatic.json", "r") as file:
     perisomatic_data = json.load(file)
-with open("/opt3/Eleonora/data/query_all_active.json", "r") as file:
+with open(query_dir + "/query_all_active.json", "r") as file:
     all_active_data = json.load(file)
-with open("/opt3/Eleonora/data/query_glif.json", "r") as file:
+with open(query_dir + "/query_glif.json", "r") as file:
     glif_data = json.load(file)
 
 
@@ -583,7 +586,8 @@ schema_legacy = dict(manifest_file=manifest_file)
 # plt.plot(t, v)
 
 # I am changing the directory to the one where the scripts are saved
-os.chdir("/opt3/Eleonora/My_scripts")
+scripts_dir = "/opt3/Eleonora/My_Scripts"
+os.chdir(scripts_dir)
 
 
 # I found out that it's possible to use the functions in AllenSDK.doc_template.examples_root.examples.simple.utils, that are much more quicker because it doesn't
