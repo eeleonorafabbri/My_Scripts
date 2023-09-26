@@ -1,0 +1,4 @@
+Requirements missing, ie which repos/dependencies are necessary for the environment
+A short overall view -- what to run first?
+Black formatting was not on => a zillion formatting modifications when I save
+For detailed comments, search for "# SV COMMENT:" string in the files.
