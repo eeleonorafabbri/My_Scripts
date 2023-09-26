@@ -1,4 +1,5 @@
 dependenicies:
+- python=3.10
 - pandas
 - numpy
 - matplotlib
@@ -7,4 +8,5 @@ dependenicies:
 - json
 - pynwb
 - pip
-- allensdk (install it via pip)
+- allensdk (install it via pip3)
+- neuron
