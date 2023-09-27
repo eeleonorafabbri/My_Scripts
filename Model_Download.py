@@ -37,7 +37,9 @@ import json
 # and http://api.brain-map.org/api/v2/data/query.json?criteria=model::ApiCellTypesSpecimenDetail,rma::criteria,[m__glif$gt0] for the GLIF cells
 # I took them from the Allen Institute Git repository (model-biophysical-passive_fitting-biophysical_archiver) and I saved them as json files
 
-query_dir = "/opt3/Eleonora/data"  # This is the directory where I saved the query results
+data_root_path = Path("/opt3/Eleonora/data")
+
+query_dir = f"{str(data_root_path)}"  # This is the directory where I saved the query results
 with open(query_dir + "/query_perisomatic.json", "r") as file:
     perisomatic_data = json.load(file)
 with open(query_dir + "/query_all_active.json", "r") as file:
@@ -55,7 +57,7 @@ all_active_id_list = msg_all_act_df.id
 
 
 download_folder_dir = Path(
-    "/opt3/Eleonora/data/Physiology/"
+    f"{str(data_root_path)}/Physiology/"
 )  # This is the directory of the main folder where I want to save the data
 perisomatic_dir = download_folder_dir / "perisomatic"
 all_active_dir = download_folder_dir / "all_active"
@@ -136,7 +138,7 @@ for neuronal_model_id, specimen_id in zip(neuronal_model_id_list, specimen_id_li
 # on which I had morphological and electrophysiological data (that are contained in the cell_feat_orientation_data.csv file, created in 
 # the Organised_Script.py script).
 
-cell_feat_orient_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_orientation_data.csv")
+cell_feat_orient_df = pd.read_csv(f"{str(data_root_path)}/cell_feat_orientation_data.csv")
 
 glif_common_id = set(cell_feat_orient_df.specimen__id) & set(specimen_id_list)
 glif_common_id = [int(id) for id in glif_common_id]
