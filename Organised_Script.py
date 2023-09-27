@@ -731,7 +731,8 @@ cell_feat_orient_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_orientation_dat
 # cell_feat_orient_new_df = pd.read_csv("/opt3/Eleonora/data/oriented_data.csv")
 
 
-# Here I analyzed the morphology of the cells, making a list of their specimens. 
+# Here I analyzed the morphology of the mice cells (because are the only one that have angle data), 
+# making a list of their specimens. 
 # I removed from those specimens the ones that were repeated (because the DataFrame contains two rows for the 
 # same cell) and that caused several problems in the analysis.
 # I have divided the left ones in 3 lists:
@@ -1155,9 +1156,54 @@ not_problematic_specimens = [
 ################################################################################################################################
 # VISUALIZATION
 
-# This is the plot of the cell with id=479013100, within its corresponding layer (I commented it because it's necessary only if
-# one wants to see this particular type of plot on this neuron, but it's a good example)
-# viz = Viz()
-# cell_id = 479013100
-# viz.plot_in_layer(cell_id, cell_feat_orient_new_df, VISp_mice_cells_idx)
-# plt.show()
+# As an example, I called most of the methods for visualization for the cell with id 479013100, but they can be called for any cell.
+# I commented them because I don't want to run them every time I run the script, but they can be uncommented to try them out.
+
+viz = Viz()
+cell_id = 479013100
+specimens = [
+    479013100,
+    582644266,
+    501799874]
+# This is the dataframe that contains only data of cells whose angles, shrinkage, etc.,  is not nan
+# (I only have these data for mice cells)
+cell_feat_orient_new_df = pd.read_csv("/opt3/Eleonora/data/oriented_data.csv")
+# This is the list of the indexes of the mice cells in the dataframe cell_feat_orient_new_df that are in the VISp area
+VISp_mice_cells_idx = [cell_feat_orient_new_df.index[cell_feat_orient_new_df["structure_parent__acronym"].values == "VISp"]]
+VISp_mice_cells_idx_list = VISp_mice_cells_idx[0].tolist()
+
+# This is to visualize the neuron's 2D shape in the xy plane using morphology coordinates
+# viz.show_neuron_2D(cell_id)
+
+# This is to visualize the neuron's 2D shape in the xy plane after proper rotation
+# viz.show_orient_neuron_2D(cell_id, cell_feat_orient_new_df)
+
+# This is to visualize the neuron's 3D shape using properly rotated coordinates
+# viz.show_orient_neuron_3D(cell_id, cell_feat_orient_new_df)
+
+# This is to show the difference between maximum and minimum y coordinates (rotated) of neurons, compared to PCA coordinates
+# viz.y_coord_difference(specimens, cell_feat_orient_new_df)
+
+# This plots histograms of soma distance from pia and soma y-coordinate (after rotation)
+# viz.soma_coord_and_pia_distance(specimens, cell_feat_orient_new_df)
+
+# This plots a single neuron (2D shape) with proper rotation and origin at the pia
+# viz.plot_morphology_from_pia(cell_id, cell_feat_orient_new_df)
+
+# This plots a histogram of the cortical depth of neurites for a given neuron
+# viz.cortical_depth_hist(cell_id, cell_feat_orient_new_df)
+
+# Plots histograms of soma distances from the pia for cells in the index list of VISp mice cells;
+# the method returns the data of the histograms, which can be used to plot the layer boundaries (calling the method layer_boundaries)
+# data1, data2, data2_3, data3, data4, data5, data6, data6a, data6b = viz._soma_distance_hist_layer(VISp_mice_cells_idx_list, cell_feat_orient_new_df)
+
+# This plots histogram of layer distribution and boundaries between layers for VISp mice cells 
+# the method returns also the intersection points between the histograms (so the boundaries between layers)
+# It can be run only after getting the data from the method _soma_distance_hist_layer
+# data1, data2, data2_3, data3, data4, data5, data6, data6a, data6b = viz._soma_distance_hist_layer(VISp_mice_cells_idx_list, cell_feat_orient_new_df)
+# viz.layer_boundaries(data1, data2_3, data4, data5, data6a, data6b)
+
+# This is the plot of the 2D morphology of the cell, within its corresponding layer 
+viz.plot_in_layer(cell_id, cell_feat_orient_new_df, VISp_mice_cells_idx_list)
+
+plt.show()

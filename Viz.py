@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.patches as mpatches
 import csv
-#from sklearn.decomposition import PCA  # I have commented this line because it was giving me an error importing Organised_Script, but maybe it's necessary for this script
+from sklearn.decomposition import PCA  # I have commented this line because it was giving me an error importing Organised_Script, but maybe it's necessary for this script
 from scipy import stats
 from scipy.stats import gaussian_kde
 from scipy.optimize import fsolve, newton, bisect
@@ -1010,7 +1010,7 @@ class Viz(Analysis):
             ax.scatter(x_coord, y_coord, color=color)
         plt.ylabel("y")
         plt.xlabel("x")
-        # plt.savefig("bad_cell_2.png")
+        # plt.savefig("bad_cell_1.png")
         plt.legend(["axons", "basal dendrites", "apical dendrites"])
         return ax
 
@@ -1386,7 +1386,7 @@ class Viz(Analysis):
         grey = mpatches.Patch(color="#7f7f7f", label="Layer 6b")
         ax.invert_yaxis()
         plt.ylabel("soma_depth")
-        plt.xlabel("x")
+        plt.xlabel("number")
         plt.legend(handles=[red, orange, yellow, green, cian, blue, purple, pink, grey])
 
     def _soma_y_coord_and_distance_scatter(self, cells_idx, cell_feat_orient_new_df):
@@ -1608,7 +1608,9 @@ class Viz(Analysis):
         -----------
         matplotlib.axes.Axes: The axes object representing the generated plot.
         """
-
+        # I've called the following figures (1,2,3,4,5) to close them and avoid them being plotted
+        fig1 = plt.figure(1)
+        fig2 = plt.figure(2)
         (
             data1,
             data2,
@@ -1620,7 +1622,11 @@ class Viz(Analysis):
             data6a,
             data6b,
         ) = self._soma_distance_hist_layer(cells_idx, cell_feat_orient_new_df)
+        plt.close(fig1)
+        plt.close(fig2)
 
+        fig3 = plt.figure(3)
+        fig4 = plt.figure(4)
         (
             intersection_point_123,
             intersection_point_234,
@@ -1628,7 +1634,10 @@ class Viz(Analysis):
             intersection_point_56a,
             intersection_point_6ab,
         ) = self.layer_boundaries(data1, data2_3, data4, data5, data6a, data6b)
+        plt.close(fig3)
+        plt.close(fig4)
 
+        fig5 = plt.figure(5)
         ax = self.plot_morphology_from_pia(cell_id, cell_feat_orient_new_df)
         # I want to change the sign of every intersection point
         intersection_point_123 = -intersection_point_123
@@ -1637,12 +1646,13 @@ class Viz(Analysis):
         intersection_point_56a = -intersection_point_56a
         intersection_point_6ab = -intersection_point_6ab
 
-        ax.set_xlabel("Soma distance from pia")
-        ax.set_ylabel("Number of cells")
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
         ax.axhline(0, color="k", linestyle="--")
         ax.axhline(intersection_point_123, color="k", linestyle="--")
         ax.axhline(intersection_point_234, color="k", linestyle="--")
         ax.axhline(intersection_point_45, color="k", linestyle="--")
         ax.axhline(intersection_point_56a, color="k", linestyle="--")
         ax.axhline(intersection_point_6ab, color="k", linestyle="--")
+        plt.close(fig5)
         plt.legend(["axons", "basal dendrites", "apical dendrites"])
