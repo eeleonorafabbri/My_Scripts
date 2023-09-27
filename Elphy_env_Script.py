@@ -493,7 +493,7 @@ ctc = CellTypesCache(manifest_file="cell_types/manifest.json")
 
 specimen_id = 471819401 # It's just an example
 
-# The directory 'example_dir' is the one where the model files will be saved, in my case it's the following one:
+# The directory 'download_dir' is the one where the model files will be saved, in my case it's the following one:
 download_dir = "/opt3/Eleonora/scripts/messy_things/"  
 
 # # a list of cell metadata for cells with reconstructions, download if necessary
