@@ -5,6 +5,7 @@ dependenicies:
 - matplotlib
 - seaborn
 - scipy
+- scikit-learn
 - json
 - pynwb
 - pip
