@@ -61,6 +61,10 @@ import pdb
 from copy import deepcopy
 
 
+#GLOBAL PARAMETERS
+
+data_root_path = Path("/opt3/Eleonora/data")
+
 #######################################################################################################################################################
 
 # FUNCTIONS
@@ -235,7 +239,7 @@ def get_json_parameters(specimen_id, cell_df):
     glif_param_df = pd.DataFrame()
 
     if cell_df.loc[row_idx, "m__biophys_perisomatic"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/Physiology/perisomatic")
+        base_dir_path = Path(f"{str(data_root_path)}/Physiology/perisomatic")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "fit" in file:
@@ -261,7 +265,7 @@ def get_json_parameters(specimen_id, cell_df):
                     }
                 )
     if cell_df.loc[row_idx, "m__biophys_all_active"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/Physiology/all_active")
+        base_dir_path = Path(f"{str(data_root_path)}/Physiology/all_active")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "fit" in file:
@@ -287,7 +291,7 @@ def get_json_parameters(specimen_id, cell_df):
                     }
                 )
     if cell_df.loc[row_idx, "m__glif"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/Physiology/glif")
+        base_dir_path = Path(f"{str(data_root_path)}/Physiology/glif")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "config" in file:
@@ -347,7 +351,7 @@ def get_dict(specimen_id, cell_df):
     all_act_param_dict = {}
     glif_param_dict = {}
     if cell_df.loc[row_idx, "m__biophys_perisomatic"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/Physiology/perisomatic")
+        base_dir_path = Path(f"{str(data_root_path)}/Physiology/perisomatic")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "fit" in file:
@@ -362,7 +366,7 @@ def get_dict(specimen_id, cell_df):
                     value = entry["value"]
                     peri_param_dict[json_key] = value
     if cell_df.loc[row_idx, "m__biophys_all_active"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/Physiology/all_active")
+        base_dir_path = Path(f"{str(data_root_path)}/Physiology/all_active")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "fit" in file:
@@ -377,7 +381,7 @@ def get_dict(specimen_id, cell_df):
                     value = entry["value"]
                     all_act_param_dict[json_key] = value
     if cell_df.loc[row_idx, "m__glif"] != 0:
-        base_dir_path = Path("/opt3/Eleonora/data/Physiology/glif")
+        base_dir_path = Path(f"{str(data_root_path)}/Physiology/glif")
         file_in_cartella = os.listdir(base_dir_path / specimen_id_str)
         for file in file_in_cartella:
             if file.endswith(".json") and "config" in file:
@@ -512,7 +516,7 @@ for sweep in sweeps:
 # and http://api.brain-map.org/api/v2/data/query.json?criteria=model::ApiCellTypesSpecimenDetail,rma::criteria,[m__glif$gt0] for the GLIF cells
 # I took them from the Allen Institute Git repository (model-biophysical-passive_fitting-biophysical_archiver) and I saved them as json files
 
-query_dir = "/opt3/Eleonora/data"  # This is the directory where I saved the query results
+query_dir = f"{str(data_root_path)}"  # This is the directory where I saved the query results
 with open(query_dir + "/query_perisomatic.json", "r") as file:
     perisomatic_data = json.load(file)
 with open(query_dir + "/query_all_active.json", "r") as file:
@@ -619,7 +623,7 @@ os.chdir(scripts_dir)
 
 
 # I imported the df that contains the cell features from Organised_Scripts.py
-cell_feat_orient_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_orientation_data.csv")
+cell_feat_orient_df = pd.read_csv(f"{str(data_root_path)}/cell_feat_orientation_data.csv")
 
 cell_df = deepcopy(cell_feat_orient_df)
 perisomatic_specimen_id = msg_peri_df.specimen_id

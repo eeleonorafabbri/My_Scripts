@@ -47,7 +47,8 @@ from math import sqrt
 
 # GLOBAL PARAMETERS
 
-output_dir = Path("/opt3/Eleonora/data/Morphology")
+data_root_path = Path("/opt3/Eleonora/data")
+output_dir = Path(f"{str(data_root_path)}/Morphology")
 ctc = CellTypesCache(manifest_file=output_dir / "manifest.json")
 axon_color = "blue"
 bas_dendrite_color = "red"
@@ -66,9 +67,9 @@ def get_features_df():
     - feat_df: dataframe containing all the features of the cells
     """
     # feat_df = ctc.get_all_features(dataframe=True)
-    feat_df = pd.read_csv("/opt3/Eleonora/data/All_features_cells.csv")
-    ef_df = pd.read_csv("/opt3/Eleonora/data/ef_data.csv")
-    mor_df = pd.read_csv("/opt3/Eleonora/data/mor_data.csv")
+    feat_df = pd.read_csv(f"{str(data_root_path)}/All_features_cells.csv")
+    ef_df = pd.read_csv(f"{str(data_root_path)}/ef_data.csv")
+    mor_df = pd.read_csv(f"{str(data_root_path)}/mor_data.csv")
     return ef_df, mor_df, feat_df
 
 
@@ -665,7 +666,7 @@ shrink_factor = 3.05757172357999
 # )
 
 # the dataframe cell_feat_df is the one that contains all the features of the cells, but it's not complete yet because it has no info on angle, shrinkage, etc.
-cell_feat_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_data.csv")
+cell_feat_df = pd.read_csv(f"{str(data_root_path)}/cell_feat_data.csv")
 
 
 # # To see if a cell has morphological reconstruction
@@ -684,7 +685,7 @@ cell_feat_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_data.csv")
 #             )
 
 # # I am merging the data from this two dataframes (cell_feat_df and cell_df) in order to have these info in one dataframe (cell_feat_df)
-# cell_df = pd.read_csv("/opt3/Eleonora/data/cell_types_specimen_details_3.csv")
+# cell_df = pd.read_csv(f"{str(data_root_path)}/cell_types_specimen_details_3.csv")
 
 # common_id = set(cell_df.specimen__id) & set(feat_df.specimen_id)
 
@@ -699,7 +700,7 @@ cell_feat_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_data.csv")
 # # in one dataframe (cell_feat_df); I commented this part because I have already done it and I saved the new dataframe in a csv file.
 
 # orientation_df = pd.read_csv(
-#     "/opt3/Eleonora/data/orientation_data.csv"
+#     f"{str(data_root_path)}/orientation_data.csv"
 # )  # This dataframe contains only the data on agles, shrinkage, etc. but only for mice cells 
 # orient_id = set(orientation_df.specimen_id) & set(cell_feat_df.specimen_id)
 # cell_feat_orient_df = deepcopy(cell_feat_df)
@@ -718,7 +719,7 @@ cell_feat_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_data.csv")
 
 # This dataframe is the definitive one, cointaining all the data for all the cells, including angles, shrinkage, etc.;
 # it has nan values for the cells that are not mice on angle columns.
-cell_feat_orient_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_orientation_data.csv")
+cell_feat_orient_df = pd.read_csv(f"{str(data_root_path)}/cell_feat_orientation_data.csv")
 
 
 # I commented these lines because they are not necessary, but if one don't want the nan values in the angle columns
@@ -728,7 +729,7 @@ cell_feat_orient_df = pd.read_csv("/opt3/Eleonora/data/cell_feat_orientation_dat
 #     subset=["soma_distance_from_pia"]
 # )
 # It's the dataframe that contains only data of cells whose angles, shrinkage, etc.,  is not nan
-# cell_feat_orient_new_df = pd.read_csv("/opt3/Eleonora/data/oriented_data.csv")
+# cell_feat_orient_new_df = pd.read_csv(f"{str(data_root_path)}/oriented_data.csv")
 
 
 # Here I analyzed the morphology of the mice cells (because are the only one that have angle data), 
@@ -1167,7 +1168,7 @@ specimens = [
     501799874]
 # This is the dataframe that contains only data of cells whose angles, shrinkage, etc.,  is not nan
 # (I only have these data for mice cells)
-cell_feat_orient_new_df = pd.read_csv("/opt3/Eleonora/data/oriented_data.csv")
+cell_feat_orient_new_df = pd.read_csv(f"{str(data_root_path)}/oriented_data.csv")
 # This is the list of the indexes of the mice cells in the dataframe cell_feat_orient_new_df that are in the VISp area
 VISp_mice_cells_idx = [cell_feat_orient_new_df.index[cell_feat_orient_new_df["structure_parent__acronym"].values == "VISp"]]
 VISp_mice_cells_idx_list = VISp_mice_cells_idx[0].tolist()
