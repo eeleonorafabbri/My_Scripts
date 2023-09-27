@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.patches as mpatches
 import csv
-from sklearn.decomposition import PCA  # I have commented this line because it was giving me an error importing Organised_Script, but maybe it's necessary for this script
+from sklearn.decomposition import PCA  
 from scipy import stats
 from scipy.stats import gaussian_kde
 from scipy.optimize import fsolve, newton, bisect
